@@ -20,8 +20,12 @@ def bin_search(l, el, ind=0):
     :return: index of element found
     """
     a = len(l)//2
+
+
     if l[a] == el:
         return a + ind
+    elif len(l) == 1:
+        return "Element not in list!"
     elif l[a] > el:
         l = l[0:a]
         return bin_search(l, el)
@@ -32,4 +36,4 @@ def bin_search(l, el, ind=0):
 print(lin_search(l, 1))
 l = sorted(l)
 print(l)
-print(bin_search(l, 1))
+print(bin_search(l, 100))
