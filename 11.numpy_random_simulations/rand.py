@@ -13,14 +13,14 @@ for i in range(1, 200):
     ln.append(stop - start)
 
     start = time.time()     # random
-    for a in range(1, i):
+    for a in range(i):
         random.random()
     stop = time.time()
     lr.append(stop - start)
 
 gr = sns.lineplot(x=range(1, 200), y=lr)
 sns.lineplot(x=range(1, 200), y=ln)
-gr.set(xlabel = "number", ylabel = "time")
-plt.title("Blue - random, orange - np")
+gr.set(xlabel="number", ylabel="time")
+plt.legend(["rand", "np"])
 plt.show()
 

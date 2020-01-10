@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def issort(l) -> object:
+def issort(l):
     """
     Checking if the list of numbers is sorted
     :param l: a list of numbers
@@ -22,7 +22,7 @@ for i in range(1, 10):  # list length
     for a in range(5):  # repeats
         l = np.random.randint(0, 50, i)
         start = time.time()
-        while issort(l) == False:
+        while not issort(l):
             np.random.shuffle(l)
         stop = time.time()
         times.append((stop - start, i))

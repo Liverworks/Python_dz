@@ -3,9 +3,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 x = y = 0
-xy = [(0, 0)]
+
 
 for i in range(30): # 30 steps
+    x1, y1 = x, y
     l = np.random.randint(0, 4, 1)  # direction
     if l == 0:
         x += 1
@@ -15,10 +16,7 @@ for i in range(30): # 30 steps
         x -= 1
     else:
         y -= 1
-    xy.append((x, y))
+    gr = sns.lineplot(x = [x1, x], y= [y1, y], )    # rainbow!
 
-xy = np.array(xy, dtype=[("x", "int"), ("y", "int")])
-
-gr = sns.scatterplot(x=xy['x'], y=xy['y'])
-plt.title("random walk")
+plt.title("Random walk")
 plt.show()

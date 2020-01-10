@@ -28,10 +28,8 @@ def global_align(path, match=1, mism=-1, gap=-1):
     """
     with open(path, "r") as fasta:  # read sequences from file
         lines = fasta.readlines()
-        A = lines[1]
-        B = lines[3]
-    A = A[0:-1]
-    B = B[0:-1]
+        A = lines[1].strip()
+        B = lines[3].strip()
     matrix = [[i * gap] for i in range(len(B)+1)]   # making matrix with scores
     matrix[0] = [i * gap for i in range(len(A)+1)]
     for a in range(1, len(B)+1):    # filling the matrix
@@ -46,7 +44,13 @@ def global_align(path, match=1, mism=-1, gap=-1):
     alignA = []
     alignB = []
     while a < len(B) and i < len(A):    # Going through the matrix with highest score on the way
-        if matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
+        if matrix[a + 1][i + 1] >= matrix[a + 1][i] and matrix[a + 1][i + 1] >= matrix[a][i + 1]:
+            alignB.append(B[a])
+            alignA.append(A[i])
+            n = n + matrix[a + 1][i + 1]
+            a += 1
+            i += 1
+        elif matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
             alignB.append("-")
             alignA.append(A[i])
             n = n + matrix[a][i + 1]
@@ -56,12 +60,7 @@ def global_align(path, match=1, mism=-1, gap=-1):
             alignA.append("-")
             n = n + matrix[a + 1][i]
             a += 1
-        else:
-            alignB.append(B[a])
-            alignA.append(A[i])
-            n = n + matrix[a + 1][i + 1]
-            a += 1
-            i += 1
+    # print(matrix)
     if a == len(B):     # way from the edge to the corner
         while i < len(A):
             alignB.append("-")
@@ -80,7 +79,7 @@ def global_align(path, match=1, mism=-1, gap=-1):
 
 
 
-fastq2fasta("/home/anna/ib/Sample_EveT12_1_csn.fastq", "/home/anna/ib/Sample_EveT12_1_csn.fasta")
+# fastq2fasta("/home/anna/ib/Sample_EveT12_1_csn.fastq", "/home/anna/ib/Sample_EveT12_1_csn.fasta")
 
 print(global_align("/home/anna/ib/Sample_EveT12_1_csn.fasta"))
 
@@ -97,10 +96,8 @@ def local_align(path, match=1, mism=-1, gap=-1):
     """
     with open(path, "r") as fasta:  # read sequences from file
         lines = fasta.readlines()
-        A = lines[1]
-        B = lines[3]
-    A = A[0:-1]
-    B = B[0:-1]
+        A = lines[1].strip()
+        B = lines[3].strip()
     matrix = [[0] for i in range(len(B)+1)]   # making matrix with scores
     matrix[0] = [0 for i in range(len(A)+1)]
     for a in range(1, len(B)+1):    # filling the matrix
@@ -123,22 +120,23 @@ def local_align(path, match=1, mism=-1, gap=-1):
                     i = b
                     if c <= i or d <= a:
                         continue
+                    n = 0
                     while a < d and i < c:    # Going through the matrix with highest score on the way
-                        if matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
-                            alignB.append("-")
+                        if matrix[a + 1][i + 1] >= matrix[a][i + 1] and matrix[a + 1][i + 1] >= matrix[a + 1][i]:
+                            alignB.append(B[a])
                             alignA.append(A[i])
-                            n = n + matrix[a][i + 1]
+                            n = n + matrix[a + 1][i + 1]
+                            a += 1
                             i += 1
                         elif matrix[a + 1][i] >= matrix[a + 1][i + 1] and matrix[a + 1][i] >= matrix[a][i + 1]:
                             alignB.append(B[a])
                             alignA.append("-")
                             n = n + matrix[a + 1][i]
                             a += 1
-                        else:
-                            alignB.append(B[a])
+                        elif matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
+                            alignB.append("-")
                             alignA.append(A[i])
-                            n = n + matrix[a + 1][i + 1]
-                            a += 1
+                            n = n + matrix[a][i + 1]
                             i += 1
                     if a == d:  # way from the edge to the corner
                         while i < c:
@@ -153,11 +151,9 @@ def local_align(path, match=1, mism=-1, gap=-1):
                             n = n + matrix[a + 1][i]
                             a += 1
                     if n > maxn:    # choose max score
-                        print(n)
                         maxn = n
                         maxalignA = "".join(alignA)
                         maxalignB = "".join(alignB)
-                    n = 0
                     alignA.clear()
                     alignB.clear()
 

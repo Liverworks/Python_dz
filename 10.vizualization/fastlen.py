@@ -1,16 +1,18 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def fastlen(path):
-
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
+    """
+    Histogram of sequence lengths
+    :param path: path to fasta file
+    """
     l = []
     with open(path, "r") as fast:
         for i in fast:
             if i[0] != ">":
                 l.append(len(i))
 
-    sns.boxplot(l)
+    sns.distplot(l, bins=25, kde=False)
     plt.show()
 
 

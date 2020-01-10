@@ -1,20 +1,29 @@
+from typing import List, Any
+
 import numpy as np
 
 s = "I wrote some text about it"
 
-l = s.split(" ")
-ol = []
+def reshuffle(s):
+    """
+    Making letters in words shuffled
+    :param s: a sentence
+    :return: sentence with letters in words in other order
+    """
+    l = s.split(" ")
+    out_string = []
 
-for i in l:
-    if len(i) < 4:  # short words
-        ol.append(i)
-    else:           # long words
-        li = list(i)
-        lir = li[1:-1]
-        np.random.shuffle(lir)
-        lio = li[0]
-        lio = lio + "".join(lir)
-        lio = lio + li[-1]
-        ol.append("".join(lio))
+    for i in l:
+        if len(i) < 4:  # short words
+            out_string.append(i)
+        else:           # long words
+            li = list(i)
+            li_toreshuffle = li[1:-1]
+            np.random.shuffle(li_toreshuffle)
+            li_output = li[0]
+            li_output = li_output + "".join(li_toreshuffle)
+            li_output = li_output + li[-1]
+            out_string.append("".join(li_output))
+    return " ".join(out_string)
 
-print(" ".join(ol))
+print(reshuffle(s))
