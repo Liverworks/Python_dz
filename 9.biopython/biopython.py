@@ -35,32 +35,32 @@ def global_align(path, match=1, mism=-1, gap=-1):
     for a in range(1, len(B)+1):    # filling the matrix
         for i in range(1, len(A)+1):
             if A[i-1] == B[a-1]:
-                matrix[a].append(max(matrix[a - 1][i]+ match + gap, matrix[a][i - 1] + match + gap, matrix[a - 1][i - 1] + match))
+                matrix[a].append(max(matrix[a - 1][i] + gap, matrix[a][i - 1] + gap, matrix[a - 1][i - 1] + match))
             else:
-                matrix[a].append(max(matrix[a - 1][i] + mism + gap, matrix[a][i - 1] + mism + gap, matrix[a - 1][i - 1] + mism))
+                matrix[a].append(max(matrix[a - 1][i] + gap, matrix[a][i - 1] + gap, matrix[a - 1][i - 1] + mism))
     i = 0
     a = 0
     n = 0   # score
     alignA = []
     alignB = []
     while a < len(B) and i < len(A):    # Going through the matrix with highest score on the way
-        if matrix[a + 1][i + 1] >= matrix[a + 1][i] and matrix[a + 1][i + 1] >= matrix[a][i + 1]:
+        if matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
+            alignB.append("-")
+            alignA.append(A[i])
+            n = n + matrix[a][i + 1]
+            i += 1
+        elif matrix[a + 1][i + 1] >= matrix[a + 1][i] and matrix[a + 1][i + 1] >= matrix[a][i + 1]:
             alignB.append(B[a])
             alignA.append(A[i])
             n = n + matrix[a + 1][i + 1]
             a += 1
-            i += 1
-        elif matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
-            alignB.append("-")
-            alignA.append(A[i])
-            n = n + matrix[a][i + 1]
             i += 1
         elif matrix[a + 1][i] >= matrix[a + 1][i + 1] and matrix[a + 1][i] >= matrix[a][i + 1]:
             alignB.append(B[a])
             alignA.append("-")
             n = n + matrix[a + 1][i]
             a += 1
-    # print(matrix)
+    print(matrix)
     if a == len(B):     # way from the edge to the corner
         while i < len(A):
             alignB.append("-")
@@ -103,16 +103,20 @@ def local_align(path, match=1, mism=-1, gap=-1):
     for a in range(1, len(B)+1):    # filling the matrix
         for i in range(1, len(A)+1):
             if A[i-1] == B[a-1]:
-                matrix[a].append(max(matrix[a - 1][i]+ match + gap, matrix[a][i - 1] + match + gap, matrix[a - 1][i - 1] + match))
+                matrix[a].append(max(matrix[a - 1][i] + gap, matrix[a][i - 1] + gap, matrix[a - 1][i - 1] + match))
             else:
-                matrix[a].append(max(matrix[a - 1][i] + mism + gap, matrix[a][i - 1] + mism + gap, matrix[a - 1][i - 1] + mism))
+                matrix[a].append(max(matrix[a - 1][i] + gap, matrix[a][i - 1] + gap, matrix[a - 1][i - 1] + mism))
+            if matrix[a][i] < 0:
+                matrix[a][i] = 0
     n = 0   # score
+    a = 0
+    i = 0
     maxn = min(matrix[-1])
     alignA = []
     alignB = []
     maxalignA = []
     maxalignB = []
-    for e in range(len(B)): # Doing global alignment from and to every possible coordinate
+    """    for e in range(len(B)): # Doing global alignment from and to every possible coordinate
         for b in range(len(A)):
             for c in range(1, len(A)):
                 for d in range(1, len(B)):
@@ -155,10 +159,39 @@ def local_align(path, match=1, mism=-1, gap=-1):
                         maxalignA = "".join(alignA)
                         maxalignB = "".join(alignB)
                     alignA.clear()
-                    alignB.clear()
-
-    maxalignA = maxalignA + "\n" # joining to sequences into one
-    align = maxalignA + maxalignB
-    return maxn, align
+                    alignB.clear()"""
+    while a < len(B) and i < len(A):  # Going through the matrix with highest score on the way
+        if matrix[a][i + 1] >= matrix[a + 1][i + 1] and matrix[a][i + 1] >= matrix[a + 1][i]:
+            alignB.append("-")
+            alignA.append(A[i])
+            n = n + matrix[a][i + 1]
+            i += 1
+        elif matrix[a + 1][i + 1] >= matrix[a + 1][i] and matrix[a + 1][i + 1] >= matrix[a][i + 1]:
+            alignB.append(B[a])
+            alignA.append(A[i])
+            n = n + matrix[a + 1][i + 1]
+            a += 1
+            i += 1
+        elif matrix[a + 1][i] >= matrix[a + 1][i + 1] and matrix[a + 1][i] >= matrix[a][i + 1]:
+            alignB.append(B[a])
+            alignA.append("-")
+            n = n + matrix[a + 1][i]
+            a += 1
+    print(matrix)
+    if a == len(B):  # way from the edge to the corner
+        while i < len(A):
+            alignB.append("-")
+            alignA.append(A[i])
+            n = n + matrix[a][i + 1]
+            i += 1
+    elif i == len(A):
+        while a < len(B):
+            alignB.append(B[a])
+            alignA.append("-")
+            n = n + matrix[a + 1][i]
+            a += 1
+    alignA.append("\n") # joining to sequences into one
+    align = "".join(alignA + alignB)
+    return n, align
 
 print(local_align("/home/anna/ib/Sample_EveT12_1_csn.fasta"))
