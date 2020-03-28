@@ -1,6 +1,7 @@
 from Bio import SeqIO
 import seaborn as sns
 import matplotlib.pyplot as plt
+import itertools
 
 class PositiveSet(set):
     """
@@ -46,7 +47,7 @@ class Fasta():
     """
     def __init__(self, path):
         self.path = path
-        self.fa = open(path, "r")
+        self.fa = SeqIO.parse(path, "fasta")
 
     def __len__(self):
         """
@@ -54,37 +55,38 @@ class Fasta():
         """
         c = 0
         for i in self.fa:
-            if i[0] == ">":
                 c += 1
+        self.fa = SeqIO.parse(self.path, "fasta")
         return c
 
     def __str__(self):
         return self.path
 
-    def hist(self):
+    def len_hist(self):
         """
         Shows sequences lengths distribution as a bar plot.
         """
         l = []
-        for i in SeqIO.parse((self.fa), 'fasta'):
+        for i in self.fa:
             l.append(len(i))
         sns.distplot(l, bins=25, kde=False)
+        plt.title("Sequence lengths")
         plt.show()
-        self.fa.seek(0)
+        self.fa = SeqIO.parse(self.path, "fasta")
 
     def gc(self):
         """
         :return: List of G and C percent in each sequence
         """
         l = []
-        for i in SeqIO.parse((self.fa), 'fasta'):
-            c = 0
-            ll = len(i)
-            for a in i:
-                if a == "G" or a == "C":
-                    c += 1
-            l.append(c / ll)
-        self.fa.seek(0)
+        for line in self.fa:
+            gc = 0
+            line_len = len(line)
+            for letter in line:
+                if letter == "G" or letter == "C":
+                    gc += 1
+            l.append(gc / line_len)
+        self.fa = SeqIO.parse(self.path, "fasta")
         return l
 
     def kmers(self):
@@ -93,8 +95,10 @@ class Fasta():
         :return: A list of dictionaries with number of each kmer in each sequense
         """
         full_l = []
-        for line in SeqIO.parse((self.fa), 'fasta'):
-            l = {}
+        kmers = ["".join(x) for x in itertools.combinations_with_replacement("ACGT", 4)]
+        for line in self.fa:
+            l = dict.fromkeys(kmers, 0)
+            print(l)
             for i in range(len(line)-3):
                 kmer = line[i:i+4]
                 # Find every occurrence of each kmer
@@ -106,20 +110,31 @@ class Fasta():
                         l[str(kmer.seq)] = count
                         break
                     count += 1
+            print(l)
+            sns.barplot(x = list(l.keys()), y = list(l.values()))
+            plt.title('Kmers')
+            plt.xticks(rotation=90)
+            plt.show()
+        self.fa = SeqIO.parse(self.path, "fasta")
 
-            full_l.append(l)
-        self.fa.seek(0)
-        return full_l
-
-
+    def explore(self):
+        """
+        Call all functions for an object of Fasta class
+        """
+        print(fasta1)
+        print("Number of sequences")
+        len(self)
+        len_hist(self)
+        print("GC content in all sequnces")
+        gc(self)
+        kmers(self)
 
 fasta1 = Fasta("/home/anna/ib/smfas.fasta")
 
 print(fasta1)
 
-fasta1.hist()
+fasta1.len_hist()
 
 print(fasta1.gc())
 
 print(fasta1.kmers())
-
