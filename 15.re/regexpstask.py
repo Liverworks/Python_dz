@@ -5,9 +5,11 @@ import matplotlib.pyplot as plt
 
 with open('/home/anna/ib/python/text2430', 'r') as txt:
     # numbers from the story
-    pat = re.compile(r'\d+')
-    nums = pat.findall(txt.read())
-    print(nums)
+    pat = re.compile(r'(\b[\d/]+\.[\d/]+\b).\s|[\s\n]([\d/]+)([\n\s]|\.\s)')  # Its a problem to get numbers at the end of a sentence.
+    nums = pat.finditer(txt.read())
+    l = [i.group(2) for i in nums]
+    l2 = [i.group(1) for i in nums]
+    print(l, l2)
     txt.seek(0)
 
     # words with a
@@ -29,7 +31,6 @@ with open('/home/anna/ib/python/text2430', 'r') as txt:
     words = set(words)
     lenw = list(map(len, words))
     sns.distplot(lenw, bins=15, kde=False)
-    plt.show()
     plt.show()
 
 # ftps

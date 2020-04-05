@@ -121,13 +121,13 @@ class Fasta():
         """
         Call all functions for an object of Fasta class
         """
-        print(fasta1)
+        print(self)
         print("Number of sequences")
         len(self)
-        len_hist(self)
-        print("GC content in all sequnces")
-        gc(self)
-        kmers(self)
+        self.len_hist()
+        print("GC content in all sequences")
+        self.gc()
+        self.kmers()
 
 fasta1 = Fasta("/home/anna/ib/smfas.fasta")
 
