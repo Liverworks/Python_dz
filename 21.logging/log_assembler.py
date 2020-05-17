@@ -1,6 +1,10 @@
 from Bio import SeqIO
-import time
+import sys
+import argparse
+import logging
 
+logging.basicConfig(filename="assembler.log", filemode='w', format='%(asctime)s: %(message)s', datefmt="%Y.%m.%d: %H:%M:%S", level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 def assembler(path, k=5):
     """
     Primitive assembler
@@ -31,11 +35,11 @@ def assembler(path, k=5):
                     graph_v[kmer].add(sread[n:n + k])
                     kmer = sread[n:n + k]
 
-    # print(graph_w)
-    # print(graph_v)
+    logger.debug("Counts of kmers are %s", graph_w)
+    logger.debug("Relationships of kmers are %s", graph_v)
     v = None
     visited = {v: False for v in graph_v}
-    # print(visited)
+    logger.debug("All visited - false. %s", visited)
     f = None
     for i in graph_v.keys():        # take first vertex
         for a in graph_v.values():
@@ -46,17 +50,18 @@ def assembler(path, k=5):
             f = "not"
             continue
         else:
+            logger.debug("Found the beginning")
             v = i
             break
 
     if v is None:
+        logger.debug("Did not found the beginning")
         v = list(graph_v.keys())[0]
 
-    #visited[v] = True
     seq = v
     count = graph_w[v]
     stop = "ok"
-    #graph_w[seq1] = (graph_w[v])
+
     for vertex in graph_v:
         while not visited[v]:      # searching for all seqs connected with first vertex
             visited[v] = True
@@ -64,7 +69,7 @@ def assembler(path, k=5):
             for neighbour in graph_v[v]:
                 if neighbour in visited.keys():
                     if not visited[neighbour]:
-                        # print(v, neighbour, visited)
+                        logger.debug("We are here %s", (v, neighbour, visited))
                         seq += neighbour[-1]
                         graph_w[seq] = (count + graph_w[neighbour]) / 2
                         count = (count + graph_w[neighbour]) / 2
@@ -79,9 +84,23 @@ def assembler(path, k=5):
 
     return contigs
 
-print(assembler("test1.fa", k=3))
-start = time.time()
-print(assembler("test2.fa"))
-stop = time.time()
 
-print(stop - start)
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-k', "--kmer_length", required=False, type=int, default=5,
+                    help='length of kmer, default=5')
+parser.add_argument('-f', "--fasta", required=True, type=str, help='path to input fasta file')
+args = parser.parse_args()
+
+logger.info("Given arguments are %s", args)
+
+logger.info("Starting")
+result = assembler(args.fasta, args.kmer_length)
+logger.info("Writing fasta")
+
+for i in result:
+    print(">", i[1])
+    print(i[0])
+
+logging.info("Done")

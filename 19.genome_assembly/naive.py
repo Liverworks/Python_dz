@@ -1,6 +1,7 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
 import itertools
+import time
 
 def local_align(A, B, match=1, mism=-1, gap=-1):
     """
@@ -77,7 +78,10 @@ def naive_assembler(path, threshold=30):
     patch=[]
     last_best = tuple(best)
     for l1, l2 in itertools.combinations(reads, 2):
-        test_alignment = local_align(l1.seq, l2.seq, gap=-2, mism=-1)
+        test_alignment = local_align(l1.seq, l2.seq)
+        #print(l1.seq)
+        if (test_alignment[1].strip("-").find("-") != -1) or (test_alignment[2].strip("-").find("-") != -1):
+            continue
         if test_alignment[0] > threshold:      # similar reads are now one read
             s = str()
             n = 0
@@ -104,9 +108,11 @@ def naive_assembler(path, threshold=30):
 
     while last_best != tuple(best):     # stop then no changes
         last_best = tuple(best)
-        print(last_best == tuple(best))
+        # print(last_best == tuple(best))
         for l1, l2 in itertools.combinations(best, 2):      # now the same but immediately remove aligned reads
-            test_alignment = local_align(l1, l2, gap=-2, mism=-1)
+            test_alignment = local_align(l1, l2)
+            if (test_alignment[1].strip("-").find("-") != -1) or (test_alignment[2].strip("-").find("-") != -1):
+                continue
             if test_alignment[0] > threshold:
                 s = str()
                 n = 0
@@ -119,10 +125,17 @@ def naive_assembler(path, threshold=30):
                         s = s + alnB[n]
                         n += 1
                 best.append(s)
-                print(best)
+                #print(best)
                 best.remove(l1)
                 best.remove(l2)
                 break
     return best
 
-naive_assembler("test2.fasts")
+print(naive_assembler("test1.fa", threshold=10))
+
+
+start = time.time()
+naive_assembler("test2.fa", threshold=10)
+stop = time.time()
+
+print(stop - start)

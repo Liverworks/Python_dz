@@ -1,0 +1,14 @@
+2020.05.17: 08:34:00: Given arguments are Namespace(fasta='/home/anna/ib/python/19.genome_assembly/test1.fa', kmer_length=3)
+2020.05.17: 08:34:00: Starting
+2020.05.17: 08:34:00: Counts of kmers are {'GTA': 3, 'TAG': 3, 'AGC': 3, 'GCT': 3, 'CTC': 2, 'TCC': 1, 'TGT': 2, 'ATG': 1}
+2020.05.17: 08:34:00: Relationships of kmers are {'GTA': {'TAG'}, 'TAG': {'AGC'}, 'AGC': {'GCT'}, 'GCT': {'CTC'}, 'CTC': {'TCC'}, 'TGT': {'GTA'}, 'ATG': {'TGT'}}
+2020.05.17: 08:34:00: All visited - false. {'GTA': False, 'TAG': False, 'AGC': False, 'GCT': False, 'CTC': False, 'TGT': False, 'ATG': False}
+2020.05.17: 08:34:00: Found the beginning
+2020.05.17: 08:34:00: We are here ('ATG', 'TGT', {'GTA': False, 'TAG': False, 'AGC': False, 'GCT': False, 'CTC': False, 'TGT': False, 'ATG': True})
+2020.05.17: 08:34:00: We are here ('TGT', 'GTA', {'GTA': False, 'TAG': False, 'AGC': False, 'GCT': False, 'CTC': False, 'TGT': True, 'ATG': True})
+2020.05.17: 08:34:00: We are here ('GTA', 'TAG', {'GTA': True, 'TAG': False, 'AGC': False, 'GCT': False, 'CTC': False, 'TGT': True, 'ATG': True})
+2020.05.17: 08:34:00: We are here ('TAG', 'AGC', {'GTA': True, 'TAG': True, 'AGC': False, 'GCT': False, 'CTC': False, 'TGT': True, 'ATG': True})
+2020.05.17: 08:34:00: We are here ('AGC', 'GCT', {'GTA': True, 'TAG': True, 'AGC': True, 'GCT': False, 'CTC': False, 'TGT': True, 'ATG': True})
+2020.05.17: 08:34:00: We are here ('GCT', 'CTC', {'GTA': True, 'TAG': True, 'AGC': True, 'GCT': True, 'CTC': False, 'TGT': True, 'ATG': True})
+2020.05.17: 08:34:00: Writing fasta
+2020.05.17: 08:34:00: Done

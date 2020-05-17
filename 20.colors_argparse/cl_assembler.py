@@ -1,5 +1,6 @@
 from Bio import SeqIO
-import time
+import sys
+import argparse
 
 def assembler(path, k=5):
     """
@@ -79,9 +80,18 @@ def assembler(path, k=5):
 
     return contigs
 
-print(assembler("test1.fa", k=3))
-start = time.time()
-print(assembler("test2.fa"))
-stop = time.time()
+parser = argparse.ArgumentParser()
 
-print(stop - start)
+parser.add_argument('-k', "--kmer_length", required=False, type=int, default=5,
+                    help='length of kmer, default=5')
+parser.add_argument('-f', "--fasta", required=True, type=str, help='path to input fasta file')
+args = parser.parse_args()
+
+print(args.fasta)
+
+result = assembler(args.fasta, args.kmer_length)
+for i in result:
+    print(">", i[1])
+    print(i[0])
+
+
